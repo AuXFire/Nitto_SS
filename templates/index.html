@@ -1,0 +1,71 @@
+<style>
+#container {
+  width: 800px;
+  height: 600px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
+
+<div id="container"></div>
+
+<button onclick="callSwfFunction('property', 'value')">Call SWF Function</button>
+
+<script>
+function callSwfFunction(property, value) {
+    var swfObject = document.getElementById("mySwfObject");
+    if (swfObject && swfObject.handleExternalCall) {
+        swfObject.handleExternalCall("updateInfo", property, value);
+    }
+}
+
+window.addEventListener("DOMContentLoaded", function() {
+    let ruffleScript = document.createElement("script");
+    ruffleScript.src = "{{ url_for('static', filename='ruffle.js') }}";
+    ruffleScript.onload = function() {
+        let ruffle = window.RufflePlayer.newest();
+        let player = ruffle.createPlayer();
+        player.config = {
+            // Options affecting the whole page
+            publicPath: undefined,
+            polyfills: true,
+
+            // Options affecting files only
+            autoplay: "auto",
+            unmuteOverlay: "visible",
+            backgroundColor: null,
+            wmode: "window",
+            letterbox: "fullscreen",
+            warnOnUnsupportedContent: true,
+            contextMenu: "on",
+            showSwfDownload: false,
+            upgradeToHttps: window.location.protocol === "https:",
+            maxExecutionDuration: 30,
+            logLevel: "info",
+            base: null,
+            menu: true,
+            salign: "",
+            scale: "showAll",
+            forceScale: false,
+            frameRate: 60,
+            quality: "high",
+            splashScreen: false,
+            preferredRenderer: "webgpu",
+            openUrlMode: "allow",
+            allowNetworking: "all",
+        };
+
+        let container = document.getElementById("container");
+        container.appendChild(player);
+
+        // Set an ID for the SWF object for easier reference
+        player.id = "mySwfObject";
+
+        player.load("{{ url_for('static', filename='Main.swf') }}");
+    };
+
+    document.head.appendChild(ruffleScript);
+});
+</script>
